@@ -1,0 +1,55 @@
+[ui]
+username = Terrence Cole <terrence@mozilla.com>
+merge = meld
+ignore = /home/terrence/.hgignore
+
+[merge-tools]
+meld.args = $base $local $other -o $output
+kdiff3.args = $base $local $other -o $output
+
+[defaults]
+qnew = -U -e
+qdiff = -p -U 8
+diff = -p -U 8
+commit = -v
+
+[extensions]
+mq =
+hgext.mq =
+hgext.rebase =
+hgext.graphlog =
+pager =
+color =
+progress =
+record =
+extdiff =
+#bzexport = /home/terrence/moz/trunk/bzexport/bzexport.py
+#qimportbz = /home/terrence/moz/trunk/qimportbz
+
+[color]
+diff.trailingwhitespace = bold red_background
+qseries.applies = red bold
+qseries.unapplied = blue bold
+
+[diff]
+git = 1
+showfunc = 1
+unified = 8
+nodates = True
+
+[paths]
+try = ssh://hg.mozilla.org/try
+tracemonkey = ssh://hg.mozilla.org/tracemonkey
+ionmonkey = ssh://hg.mozilla.org/ionmonkey
+mozilla-central = ssh://hg.mozilla.org/mozilla-central
+mozilla-aurora = ssh://hg.mozilla.org/releases/mozilla-aurora
+mozilla-beta = ssh://hg.mozilla.org/releases/mozilla-beta
+mozilla-esr10 = ssh://hg.mozilla.org/releases/mozilla-esr10
+mozilla-esr17 = ssh://hg.mozilla.org/releases/mozilla-esr17
+mozilla-release = ssh://hg.mozilla.org/releases/mozilla-release
+jaegermonkey = ssh://hg.mozilla.org/users/danderson_mozilla.com/jaegermonkey
+mozilla-inbound = ssh://hg.mozilla.org/integration/mozilla-inbound
+holly = ssh://hg.mozilla.org/projects/holly
+
+[hooks]
+post-push = hg phase --force --draft "mq()"
