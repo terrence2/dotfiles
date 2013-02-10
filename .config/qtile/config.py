@@ -1,4 +1,4 @@
-from libqtile.manager import Key, Screen, Group
+from libqtile.manager import Drag, Group, Key, Screen
 from libqtile.command import lazy
 from libqtile import layout, bar, widget
 
@@ -67,23 +67,7 @@ keys = [
     Key([CTRL, ALT], "r", lazy.restart()),
 ]
 
-groups = [
-    Group("1"),
-    Group("2"),
-    Group("3"),
-    Group("4"),
-    Group("5"),
-    Group("6"),
-    Group("q"),
-    Group("w"),
-    Group("e"),
-    Group("r"),
-    Group("t"),
-    Group("7"),
-    Group("8"),
-    Group("9"),
-    Group("0"),
-]
+groups = [Group(c) for c in "123456qwert7890"]
 for i in groups:
     keys.append(
         Key([MOD], i.name, lazy.group[i.name].toscreen())
@@ -94,32 +78,48 @@ for i in groups:
 
 layouts = [
     layout.Max(),
-    layout.Stack(stacks=2)
+    layout.Stack(stacks=2, border_width=1)
 ]
 
 screens = [
     Screen(
         top = bar.Bar(
                     [
-                        widget.GroupBox(),
+                        widget.GroupBox(urgent_alert_method='text'),
+                        widget.Prompt(),
                         widget.WindowName(),
-                        widget.TextBox("left", "default config"),
+                        widget.TextBox("right", "Vol:"),
+                        widget.Volume(),
+                        widget.TextBox("right", "Bat:"),
+                        widget.Battery(
+                            energy_now_file='charge_now',
+                            energy_full_file='charge_full',
+                            power_now_file='current_now',
+                        ),
                         widget.Systray(),
                         widget.Clock('%Y-%m-%d %a %I:%M %p'),
                     ],
-                    30,
+                    20,
                 ),
     ),
     Screen(
         top = bar.Bar(
                     [
-                        widget.GroupBox(),
+                        widget.GroupBox(urgent_alert_method='text'),
+                        widget.Prompt(),
                         widget.WindowName(),
-                        widget.TextBox("right", "default config"),
+                        widget.TextBox("right", "Vol:"),
+                        widget.Volume(),
+                        widget.TextBox("right", "Bat:"),
+                        widget.Battery(
+                            energy_now_file='charge_now',
+                            energy_full_file='charge_full',
+                            power_now_file='current_now',
+                        ),
                         widget.Systray(),
                         widget.Clock('%Y-%m-%d %a %I:%M %p'),
                     ],
-                    30,
+                    20,
                 ),
     ),
 ]
@@ -128,5 +128,10 @@ main = None
 follow_mouse_focus = True
 cursor_warp = False
 floating_layout = layout.Floating()
-mouse = ()
+mouse = [
+    Drag([MOD], "Button1", lazy.window.set_position_floating(),
+         start=lazy.window.get_position()),
+    Drag([MOD], "Button3", lazy.window.set_size_floating(),
+         start=lazy.window.get_size()),
+]
 
