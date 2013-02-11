@@ -85,10 +85,12 @@ screens = [
     Screen(
         top = bar.Bar(
                     [
-                        widget.GroupBox(urgent_alert_method='text'),
+                        widget.GroupBox(urgent_alert_method='text', fontsize=8),
+                        widget.Sep(),
                         widget.Prompt(),
                         widget.WindowName(),
-                        widget.TextBox("right", "Vol:"),
+                        widget.Sep(),
+                        widget.TextBox("right", u'\u266B'),
                         widget.Volume(),
                         widget.TextBox("right", "Bat:"),
                         widget.Battery(
@@ -96,7 +98,14 @@ screens = [
                             energy_full_file='charge_full',
                             power_now_file='current_now',
                         ),
+                        widget.CPUGraph(width=42, line_width=2, graph_color='0066FF', fill_color='001188'),
+                        widget.MemoryGraph(width=42, line_width=2, graph_color='22FF44', fill_color='11AA11'),
+                        widget.NetGraph(width=42, line_width=2, graph_color='FF9F20', fill_color='C06010'),
+                        widget.SwapGraph(width=20, line_width=2, graph_color='FF2020', fill_color='C01010'),
+                        widget.HDDGraph(width=20, line_width=2, graph_color='FF2020', fill_color='C01010'),
+                        widget.Sep(),
                         widget.Systray(),
+                        widget.Sep(),
                         widget.Clock('%Y-%m-%d %a %I:%M %p'),
                     ],
                     20,
@@ -105,10 +114,12 @@ screens = [
     Screen(
         top = bar.Bar(
                     [
-                        widget.GroupBox(urgent_alert_method='text'),
+                        widget.GroupBox(urgent_alert_method='text', fontsize=8),
+                        widget.Sep(),
                         widget.Prompt(),
                         widget.WindowName(),
-                        widget.TextBox("right", "Vol:"),
+                        widget.Sep(),
+                        widget.TextBox("right", u'\u266B'),
                         widget.Volume(),
                         widget.TextBox("right", "Bat:"),
                         widget.Battery(
@@ -116,7 +127,14 @@ screens = [
                             energy_full_file='charge_full',
                             power_now_file='current_now',
                         ),
+                        widget.CPUGraph(width=42, line_width=2, graph_color='0066FF', fill_color='001188'),
+                        widget.MemoryGraph(width=42, line_width=2, graph_color='22FF44', fill_color='11AA11'),
+                        widget.NetGraph(width=42, line_width=2, graph_color='FF9F20', fill_color='C06010'),
+                        widget.SwapGraph(width=20, line_width=2, graph_color='FF2020', fill_color='C01010'),
+                        widget.HDDGraph(width=20, line_width=2, graph_color='FF2020', fill_color='C01010'),
+                        widget.Sep(),
                         widget.Systray(),
+                        widget.Sep(),
                         widget.Clock('%Y-%m-%d %a %I:%M %p'),
                     ],
                     20,
