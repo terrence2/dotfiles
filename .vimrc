@@ -1,6 +1,6 @@
 set nocompatible
 
-colorscheme slate
+colorscheme torte
 
 " enable pathogen
 call pathogen#infect()
@@ -50,3 +50,6 @@ set conceallevel=2
 " Tab complete filenames
 set wildmode=longest,list,full
 set wildmenu
+
+" Mouse hiding frenquently doesn't unhide.
+set nomh

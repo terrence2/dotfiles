@@ -153,3 +153,13 @@ mouse = [
          start=lazy.window.get_size()),
 ]
 
+# Automatically float these types. This overrides the default behavior (which
+# is to also float utility types), but the default behavior breaks our fancy
+# gimp slice layout specified later on.
+floating_layout = layout.Floating(auto_float_types=[
+  "notification",
+  "toolbar",
+  "splash",
+  "dialog",
+  "utility",
+])
