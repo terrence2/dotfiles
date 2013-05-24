@@ -23,9 +23,10 @@ color =
 progress =
 record =
 extdiff =
-#bzexport = /home/terrence/moz/trunk/bzexport/bzexport.py
-qimportbz = /home/terrence/moz/trunk/qimportbz
-qbackout = /home/terrence/moz/qbackout
+bzexport = /home/terrence/.hgextensions/bzexport
+qimportbz = /home/terrence/.hgextensions/qimportbz
+qbackout = /home/terrence/.hgextensions/qbackout
+crecord = /home/terrence/.hgextensions/crecord/crecord
 
 [color]
 diff.trailingwhitespace = bold red_background

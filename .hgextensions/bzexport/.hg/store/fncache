@@ -1,0 +1,6 @@
+data/bzauth.py.i
+data/bzexport.py.i
+data/__init__.py.i
+data/.hgignore.i
+data/README.i
+data/bz.py.i
