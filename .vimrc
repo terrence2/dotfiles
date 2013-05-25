@@ -1,6 +1,17 @@
+" += M
 set nocompatible
 
+" Set dark colorscheme
 colorscheme torte
+
+" Vundle Configuration
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+Bundle 'gmarik/vundle'
+  " My Bundles here:
+Bundle 'scrooloose/nerdtree'
+filetype plugin indent on
 
 " enable pathogen
 call pathogen#infect()
@@ -19,10 +30,11 @@ set expandtab
 set tabstop=4
 set sw=4
 
-" Auto-indent
+" Auto/Smart-indent everywhere.
 set autoindent
 set smartindent
-"set cindent
+
+" Set cindent, but only for C(++) files.
 au BufNewFile,BufReadPost *.c setl cindent
 au BufNewFile,BufReadPost *.C setl cindent
 au BufNewFile,BufReadPost *.cpp setl cindent
@@ -44,12 +56,13 @@ set scrolloff=8
 :au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 :au InsertLeave * match ExtraWhitespace /\s\+$/
 
-" Enable conceal
+" Enable conceal -- used for our C(++) replacement chars.
 set conceallevel=2
 
 " Tab complete filenames
 set wildmode=longest,list,full
 set wildmenu
 
-" Mouse hiding frenquently doesn't unhide.
+" Mouse hiding frenquently doesn't unhide in qtile.
 set nomh
+
