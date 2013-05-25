@@ -16,6 +16,9 @@ filetype plugin indent on
 " enable pathogen
 call pathogen#infect()
 
+" Configure NERD Tree
+map <C-O> :NERDTreeToggle<CR>
+
 " show line/column at bottom
 set ruler
 
