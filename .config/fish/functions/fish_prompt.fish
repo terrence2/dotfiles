@@ -22,15 +22,14 @@ function fish_prompt
     tty|grep -q tty; and set tty tty; or set tty pts
 
     # Vertical Bar
-    set_color $retc
-    echo -n "━━┯"
+    #echo -n "╭──"
+    border $retc $tty ".--" "╭──"
     for col in (seq (expr $COLUMNS - 4))
-        echo -n '━'
+        echo -n '─'
     end
     echo ""
 
-    border $retc $tty ".-'" '╭─╯'
-    #border $retc $tty ']-[' '┠─┨'
+    border $retc $tty "|" '╞'
 
     # PWD
     set_color -o white
@@ -69,7 +68,7 @@ function fish_prompt
 
     set nUserHost (echo -n $USER@(hostname) | wc -c)
 
-    for col in (seq (math $COLUMNS - 3 - $nPath - $nMercurial - $nBat - $nUserHost - 1))
+    for col in (seq (math $COLUMNS - 1 - $nPath - $nMercurial - $nBat - $nUserHost - 1))
         echo -n ' '
     end
 
@@ -97,11 +96,11 @@ function fish_prompt
     echo
     set_color normal
     for job in (jobs)
-        border $retc $tty '; ' '┃ '
+        border $retc $tty '; ' '│ '
         set_color brown
         echo $job
     end
 
     # And draw the prompt.
-    border $retc $tty "'-|" '╰─> '
+    border $retc $tty "'>" '╰> '
 end
