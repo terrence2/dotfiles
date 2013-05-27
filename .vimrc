@@ -11,6 +11,7 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
   " My Bundles here:
 Bundle 'scrooloose/nerdtree'
+Bundle 'wesleyche/SrcExpl.git'
 filetype plugin indent on
 
 " enable pathogen
@@ -18,6 +19,7 @@ call pathogen#infect()
 
 " Configure NERD Tree
 map <C-O> :NERDTreeToggle<CR>
+map <C-S-O> :SrcExplToggle<CR>
 
 " show line/column at bottom
 set ruler
