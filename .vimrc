@@ -11,7 +11,6 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
   " My Bundles here:
 Bundle 'scrooloose/nerdtree'
-Bundle 'wesleyche/SrcExpl.git'
 filetype plugin indent on
 
 " enable pathogen
