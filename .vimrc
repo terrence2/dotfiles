@@ -1,6 +1,9 @@
 " += M
 set nocompatible
 
+" Default to a sane encoding.
+set encoding=utf-8
+
 " Set dark colorscheme
 colorscheme torte
 
@@ -18,7 +21,9 @@ call pathogen#infect()
 
 " Configure NERD Tree
 map <C-O> :NERDTreeToggle<CR>
-map <C-S-O> :SrcExplToggle<CR>
+
+" Configure SrcExpl
+"map <C-S-O> :SrcExplToggle<CR>
 
 " show line/column at bottom
 set ruler
