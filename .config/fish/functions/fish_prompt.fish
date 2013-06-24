@@ -8,10 +8,6 @@ function border
     end
 end
 
-function user_host_size
-
-end
-
 function fish_right_prompt
     set_color cyan
     echo -n (date "+%H:%M:%S|%Z ")
@@ -37,6 +33,24 @@ function fish_prompt
     echo -n $tmp
     set nPath (echo -n $tmp | wc -c)
 
+    # CMD_DURATION tracks last command time if it takes more than 1 sec.
+    set nDuration 0
+    if test $CMD_DURATION
+        border $retc $tty '  |' '  ╰'
+        set_color magenta
+        echo -n $CMD_DURATION
+        border $retc $tty '|' '╯'
+        set nDuration (echo -n "  |$CMD_DURATION|" | wc -c)
+
+        # CMD_OURATION is a string of form _m _.__s, we want the duration in
+        # seconds so that we can only send notifications for commands longer than
+        # ~30 seconds.
+        set -l taken (echo $CMD_DURATION | perl -ne 'if (m/^((\d+)m )?(\d+\.\d+)s$/) {print $2 * 60 + $3;}')
+        if test $taken -gt 30
+            notify-send "Finished <something> | $CMD_DURATION"
+        end
+    end
+
     # Mercurial QTop
     set nMercurial 0
     if [ (hg qtop 2> /dev/null) ]
@@ -58,17 +72,9 @@ function fish_prompt
         set nBat (echo -n "  |"$tmp"|" | wc -c)
     end
 
-    # COMMAND TIME
-    #set now (date +%s)
-    #if [ $_PRIOR_CLI_TIME ]
-    #    set diff (expr $_PRIOR_CLI_TIME - $now)
-    #    echo -n $diff
-    #end
-    #set -g _PRIOR_CLI_TIME $now
-
     set nUserHost (echo -n $USER@(hostname) | wc -c)
 
-    for col in (seq (math $COLUMNS - 1 - $nPath - $nMercurial - $nBat - $nUserHost - 1))
+    for col in (seq (math $COLUMNS - 1 - $nPath - $nDuration - $nMercurial - $nBat - $nUserHost - 1))
         echo -n ' '
     end
 
@@ -90,7 +96,6 @@ function fish_prompt
         set_color -o cyan
     end
     echo -n (hostname)
-
 
     # List all jobs.
     echo

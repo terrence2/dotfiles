@@ -1,6 +1,9 @@
 " += M
 set nocompatible
 
+" Default to a sane encoding.
+set encoding=utf-8
+
 " Set dark colorscheme
 colorscheme torte
 
@@ -31,6 +34,9 @@ nmap <F7> :NERDTreeToggle<CR>
 "let g:SrcExpl_isUpdateTags = 0
 "let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase **/*.cpp **/*.h"
 "let g:SrcExpl_updateTagsKey = "<F12>"
+
+" Configure SrcExpl
+"map <C-S-O> :SrcExplToggle<CR>
 
 " show line/column at bottom
 set ruler
