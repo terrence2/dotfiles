@@ -11,13 +11,26 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
   " My Bundles here:
 Bundle 'scrooloose/nerdtree'
+"Bundle 'wesleyche/SrcExpl'
 filetype plugin indent on
 
 " enable pathogen
 call pathogen#infect()
 
 " Configure NERD Tree
-map <C-O> :NERDTreeToggle<CR>
+nmap <F7> :NERDTreeToggle<CR>
+
+" Configure SrcExpl
+"nmap <F8> :SrcExplToggle<CR>
+"let g:SrcExpl_pluginList = [
+"        \ "__Tag_List__",
+"        \ "_NERD_tree_",
+"        \ "Source_Explorer"
+"    \ ]
+"let g:SrcExpl_searchLocalDef = 0
+"let g:SrcExpl_isUpdateTags = 0
+"let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase **/*.cpp **/*.h"
+"let g:SrcExpl_updateTagsKey = "<F12>"
 
 " show line/column at bottom
 set ruler
