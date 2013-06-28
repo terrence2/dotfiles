@@ -70,7 +70,7 @@ function fish_prompt
     if [ (acpi -a 2> /dev/null | grep off) ]
         border $retc $tty '  | ' '  ╰ '
         set_color -o red
-        set tmp (acpi -b|cut -d' ' -f 4-)
+        set tmp (acpi -b|cut -d' ' -f 4-|sed 's/, discharging at zero rate - will never fully discharge.//')
         echo -n $tmp
         border $retc $tty ' |' ' ╯'
         set nBat (echo -n "  | $tmp |" | wc -c)
