@@ -21,7 +21,7 @@ function fish_prompt
     #echo -n "╭──"
     border $retc $tty ".--" "╭──"
     for col in (seq (expr $COLUMNS - 4))
-        echo -n '─'
+        border $retc $tty "-" '─'
     end
     echo ""
 
@@ -36,11 +36,11 @@ function fish_prompt
     # CMD_DURATION tracks last command time if it takes more than 1 sec.
     set nDuration 0
     if test $CMD_DURATION
-        border $retc $tty '  |' '  ╰'
+        border $retc $tty '  | ' '  ╰ '
         set_color magenta
         echo -n $CMD_DURATION
-        border $retc $tty '|' '╯'
-        set nDuration (echo -n "  |$CMD_DURATION|" | wc -c)
+        border $retc $tty ' |' ' ╯'
+        set nDuration (echo -n "  | $CMD_DURATION |" | wc -c)
 
         # CMD_OURATION is a string of form _m _.__s, we want the duration in
         # seconds so that we can only send notifications for commands longer than
@@ -53,23 +53,27 @@ function fish_prompt
 
     # Mercurial QTop
     set nMercurial 0
-    if [ (hg qtop 2> /dev/null) ]
-        border $retc $tty '  |' '  ╰'
+    set -l hg_qtop (hg qtop 2> /dev/null)
+    if [ $hg_qtop ]
+        if [ $hg_qtop = "no patches applied" ]
+            set hg_qtop ∅
+        end
+        border $retc $tty '  | ' '  ╰ '
         set_color magenta
-        echo -n (hg qtop)
-        border $retc $tty '|' '╯'
-        set nMercurial (echo -n "  |"(hg qtop)"|" | wc -c)
+        echo -n $hg_qtop
+        border $retc $tty ' |' ' ╯'
+        set nMercurial (echo -n "  | $hg_qtop |" | wc -c)
     end
 
     # Battery status.
     set nBat 0
     if [ (acpi -a 2> /dev/null | grep off) ]
-        border $retc $tty '  |' '  ╰'
+        border $retc $tty '  | ' '  ╰ '
         set_color -o red
         set tmp (acpi -b|cut -d' ' -f 4-)
         echo -n $tmp
-        border $retc $tty '|' '╯'
-        set nBat (echo -n "  |"$tmp"|" | wc -c)
+        border $retc $tty ' |' ' ╯'
+        set nBat (echo -n "  | $tmp |" | wc -c)
     end
 
     set nUserHost (echo -n $USER@(hostname) | wc -c)
@@ -107,5 +111,5 @@ function fish_prompt
     end
 
     # And draw the prompt.
-    border $retc $tty "'>" '╰> '
+    border $retc $tty "'> " '╰> '
 end

@@ -14,6 +14,7 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
   " My Bundles here:
 Bundle 'scrooloose/nerdtree'
+Bundle 'klen/python-mode'
 "Bundle 'wesleyche/SrcExpl'
 filetype plugin indent on
 
@@ -41,8 +42,9 @@ nmap <F7> :NERDTreeToggle<CR>
 " show line/column at bottom
 set ruler
 
-" 80 char wrapping
-set tw=80
+" Line wrapping.
+set tw=99
+set cc=+1
 
 " allow backspace across lines
 set backspace=2
