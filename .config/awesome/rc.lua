@@ -271,6 +271,24 @@ globalkeys = awful.util.table.join(
               end)
 )
 
+-- Brightness Control
+if string.find(hostname, "capuchin") == 1 then
+    globalkeys = awful.util.table.join(globalkeys,
+        awful.key({ modkey }, "F6",
+            function (c)
+                fh = assert(io.popen("brightness -", "r"))
+                fh:read("*all")
+                fh:close()
+            end),
+        awful.key({ modkey }, "F7",
+            function (c)
+                fh = assert(io.popen("brightness +", "r"))
+                fh:read("*all")
+                fh:close()
+            end)
+    )
+end
+
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
