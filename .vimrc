@@ -15,6 +15,7 @@ Bundle 'gmarik/vundle'
   " My Bundles here:
 Bundle 'scrooloose/nerdtree'
 Bundle 'klen/python-mode'
+Bundle 'myusuf3/numbers.vim'
 "Bundle 'wesleyche/SrcExpl'
 filetype plugin indent on
 
@@ -23,6 +24,9 @@ call pathogen#infect()
 
 " Configure NERD Tree
 nmap <F7> :NERDTreeToggle<CR>
+
+" Configure numbers.vim
+nnoremap <F3> :NumbersToggle<CR>
 
 " Configure SrcExpl
 "nmap <F8> :SrcExplToggle<CR>
@@ -39,8 +43,9 @@ nmap <F7> :NERDTreeToggle<CR>
 " Configure SrcExpl
 "map <C-S-O> :SrcExplToggle<CR>
 
-" show line/column at bottom
+" show line/column at bottom and on side
 set ruler
+set number
 
 " Line wrapping.
 set tw=99
