@@ -286,9 +286,15 @@ if string.find(hostname, "capuchin") == 1 then
                 fh:read("*all")
                 fh:close()
             end),
-        awful.key({ modkey, "Control" }, "XF86PowerOff",
+        awful.key({ modkey }, "XF86PowerOff",
             function (c)
                 fh = assert(io.popen("sleep 5 && systemctl suspend"))
+                fh:read("*all")
+                fh:close()
+            end),
+        awful.key({ modkey, "Control" }, "XF86PowerOff",
+            function (c)
+                fh = assert(io.popen("sleep 5 && systemctl poweroff"))
                 fh:read("*all")
                 fh:close()
             end)
