@@ -33,9 +33,10 @@ function timer_stop {
 }
 
 function doprompt {
+  STATUS_OUT=$?
   timer_stop
 }
 
 trap 'timer_start' DEBUG
 PROMPT_COMMAND=doprompt
-PS1='`prompt 0 ${COLUMNS} ${TIMER_OUT}`'
+PS1='`prompt ${STATUS_OUT} ${COLUMNS} ${TIMER_OUT}`'
