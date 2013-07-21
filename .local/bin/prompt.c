@@ -110,7 +110,7 @@ filter_battery(char *battery)
     char *discharging = strstr(battery, "Discharging, ");
     if (discharging) {
         discharging += strlen("Discharging, ") - 3;
-        //0xE2 0x86 0x93
+        /* 0xE2 0x86 0x93 */
         discharging[0] = 0xE2;
         discharging[1] = 0x86;
         discharging[2] = 0x93;
@@ -119,7 +119,7 @@ filter_battery(char *battery)
     char *charging = strstr(battery, "Charging, ");
     if (charging) {
         charging += strlen("Charging, ") - 3;
-        //0xE2 0x86 0x91
+        /* 0xE2 0x86 0x91 */
         charging[0] = 0xE2;
         charging[1] = 0x86;
         charging[2] = 0x91;
@@ -140,6 +140,52 @@ filter_qtop(char *qtop)
     if (useless)
         *useless = '\0';
     return qtop;
+}
+
+const static long int Minutes = 60;
+const static long int Hours = 60 * 60;
+const static long int Days = 24 * 60 * 60;
+
+char *
+filter_time(char *time)
+{
+    /* If the time is "0", as we get from bash, return Epsilon. */
+    if (strlen(time) == 1 && *time == '0')
+        return "ε";
+
+    char *end;
+    long int sec = strtol(time, &end, 10);
+
+    /* If it is not fully numeric, then it is already formatted. */
+    if (*end != '\0')
+        return time;
+
+    long int days = 0;
+    if (sec >= Days) {
+        days = sec / Days;
+        sec -= days * Days;
+    }
+
+    long int hours = 0;
+    if (sec >= Hours) {
+        hours = sec / Hours;
+        sec -= hours * Hours;
+    }
+
+    long int min = 0;
+    if (sec >= Minutes) {
+        min = sec / Minutes;
+        sec -= min * Minutes;
+    }
+
+    char buffer[256];
+    if (days > 0) {
+    } else if (hours > 0) {
+    } else if (min > 0) {
+    } else {
+        snprintf(buffer, sizeof(buffer), "%lds", days);
+    }
+    return strdup(buffer);
 }
 
 void
@@ -190,17 +236,18 @@ clr(int status) {
 \->
 */
 void
-print_line0(int status, int width, char *cwd, char *qtop, char *battery, char *commandTime)
+print_line0(int status, int width, char *cwd, char *qtop, char *battery,
+            char *commandTime)
 {
     size_t offset = 0;
 
-    // Path
+    /* Path */
     clr(status);
     PUT("╭─", 2);
     PUTn("─", utf8_strlen(cwd));
     PUT("─┬──", 4);
 
-    // QTop
+    /* QTop */
     if (*qtop) {
         PUT("┬─", 2);
         PUTn("─", utf8_strlen(qtop));
@@ -208,26 +255,26 @@ print_line0(int status, int width, char *cwd, char *qtop, char *battery, char *c
         PUT("──", 2);
     }
 
-    // Battery
+    /* Battery */
     if (*battery) {
         PUT("┬─", 2);
         PUTn("─", utf8_strlen(battery));
         PUT("─┬", 2);
     }
 
-    // ----
-    size_t len = strlen(commandTime);
-    if (offset + len + 4 > width) {
+    /* ---- */
+    size_t lenTime = utf8_strlen(commandTime);
+    if (offset + lenTime + 4 > width) {
         printf("\n");
         return;
     }
-    PUTn("─", width - offset - len - 3);
+    PUTn("─", width - offset - lenTime - 3);
 
-    // Time
+    /* Time */
     clr(status);
     PUT("╮ ", 2);
     magenta();
-    PUT(commandTime, strlen(commandTime));
+    PUT(commandTime, lenTime);
 
     printf("\n");
 }
@@ -284,7 +331,7 @@ print_line1(int status, int width, char *cwd, char *qtop, char *battery,
     printf("\n");
 }
 
-// \-> 
+/* \->  */
 void
 print_line2(int status)
 {
@@ -303,8 +350,9 @@ int
 main(int argc, char **argv)
 {
     /*
-     * Assume that we will be called correctly and spawn our long-running commands immediately so
-     * that they can process in the background while we work here.
+     * Assume that we will be called correctly and spawn our long-running
+     * commands immediately so that they can process in the background while
+     * we work here.
      */
     char *acpiArgs[] = {"acpi", "-b", NULL};
     ChildInfo acpi = spawn("acpi", acpiArgs);
@@ -345,7 +393,8 @@ main(int argc, char **argv)
     memset(hostname, 0, sizeof(hostname));
     gethostname(hostname, sizeof(hostname));
 
-    char *commandTime = (argc >= 4) ? strdup(argv[3]) : NULL;
+    char *commandTime = (argc >= 4) ? strdup(argv[3]) : "ε";
+    commandTime = filter_time(commandTime);
 
     /* Read the processes we spawned. */
     char *acpiOut = readChild(acpi);
@@ -367,7 +416,8 @@ main(int argc, char **argv)
     cwd = filter_path(cwd);
 
     print_line0(status, width, cwd, qtop, battery, commandTime);
-    print_line1(status, width, cwd, qtop, battery, user, hostname, commandTime);
+    print_line1(status, width, cwd, qtop, battery,
+                user, hostname, commandTime);
     print_line2(status);
 
     return 0;
