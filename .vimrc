@@ -12,7 +12,7 @@ filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 Bundle 'gmarik/vundle'
-  " My Bundles here:
+" My Bundles here:
 Bundle 'scrooloose/nerdtree'
 Bundle 'klen/python-mode'
 Bundle 'myusuf3/numbers.vim'
@@ -20,7 +20,7 @@ Bundle 'myusuf3/numbers.vim'
 filetype plugin indent on
 
 " enable pathogen
-call pathogen#infect()
+"call pathogen#infect()
 
 " Configure NERD Tree
 nmap <F7> :NERDTreeToggle<CR>
