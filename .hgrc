@@ -33,6 +33,9 @@ diff.trailingwhitespace = bold red_background
 qseries.applies = red bold
 qseries.unapplied = blue bold
 
+[pager]
+pager = LESS='FRX' less
+
 [diff]
 git = 1
 showfunc = 1

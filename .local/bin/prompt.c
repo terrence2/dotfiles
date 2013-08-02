@@ -180,10 +180,13 @@ filter_time(char *time)
 
     char buffer[256];
     if (days > 0) {
+        snprintf(buffer, sizeof(buffer), "%ldd %ldh %ldm %lds", days, hours, min, sec);
     } else if (hours > 0) {
+        snprintf(buffer, sizeof(buffer), "%ldh %ldm %lds", hours, min, sec);
     } else if (min > 0) {
+        snprintf(buffer, sizeof(buffer), "%ldm %lds", min, sec);
     } else {
-        snprintf(buffer, sizeof(buffer), "%lds", days);
+        snprintf(buffer, sizeof(buffer), "%lds", sec);
     }
     return strdup(buffer);
 }
