@@ -28,7 +28,5 @@
 ! Scheme: Ryan Bates (http://railscasts.com)
 
 !! Font
-URxvt.font:xft:Droid Sans Mono:pixelsize=14,style=regular
-URxvt.boldFont:xft:Droid Sans Mono:pixelsize=14,style=bold
-!URxvt.font: xft:droid sans mono slashed:size=14
-!URxvt.boldFont: xft:droid sans mono slashed:size=14
+URxvt.font:xft:Droid Sans Mono:pixelsize=16,style=regular
+URxvt.boldFont:xft:Droid Sans Mono:pixelsize=16,style=bold

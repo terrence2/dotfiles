@@ -297,6 +297,45 @@ if string.find(hostname, "capuchin") == 1 then
                 fh:read("*all")
                 fh:close()
             end),
+        -- Speaker Controls
+        awful.key({ modkey }, "F8",
+            function (c)
+                fh = assert(io.popen("daisyctl --speaker=toggle", "r"))
+                fh:read("*all")
+                fh:close()
+            end),
+        awful.key({ modkey }, "F9",
+            function (c)
+                fh = assert(io.popen("daisyctl --speaker=-", "r"))
+                fh:read("*all")
+                fh:close()
+            end),
+        awful.key({ modkey }, "F10",
+            function (c)
+                fh = assert(io.popen("daisyctl --speaker=+", "r"))
+                fh:read("*all")
+                fh:close()
+            end),
+        -- Headphone Controls
+        awful.key({ modkey, "Control" }, "F8",
+            function (c)
+                fh = assert(io.popen("daisyctl --headphones=toggle", "r"))
+                fh:read("*all")
+                fh:close()
+            end),
+        awful.key({ modkey, "Control" }, "F9",
+            function (c)
+                fh = assert(io.popen("daisyctl --headphones=-", "r"))
+                fh:read("*all")
+                fh:close()
+            end),
+        awful.key({ modkey, "Control" }, "F10",
+            function (c)
+                fh = assert(io.popen("daisyctl --headphones=+", "r"))
+                fh:read("*all")
+                fh:close()
+            end),
+        -- Power controls
         awful.key({ modkey }, "XF86PowerOff",
             function (c)
                 fh = assert(io.popen("sleep 5 && systemctl suspend"))
@@ -471,3 +510,7 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+-- Run network manager.
+os.execute("nm-applet &")
+
