@@ -188,7 +188,10 @@ for s = 1, screen.count() do
     batterywidgettimer:connect_signal("timeout",
       function()
         fh = assert(io.popen("acpi | cut -d, -f 2,3 - | sed 's/, discharging at zero rate - will never fully discharge.//'", "r"))
-        batterywidget:set_text(" | 🔋" .. fh:read("*l") .. " | ")
+        res = fh:read("*l")
+        if res then
+            batterywidget:set_text(" | 🔋" .. res .. " | ")
+        end
         fh:close()
       end
     )
