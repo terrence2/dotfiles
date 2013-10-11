@@ -41,19 +41,14 @@ end
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "urxvt"
-editor = os.getenv("EDITOR") or "vim"
-editor_cmd = terminal .. " -e " .. editor
 hostname = awful.util.pread("hostname"):gsub("\n", "")
 
--- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
--- If you do not like this or do not have such a key,
--- I suggest you to remap Mod4 to another key using xmodmap or other tools.
--- However, you can use another modifier like Mod1, but it may interact with others.
-modkey = "Mod4"
+MODKEY = "Mod4"
+TERMINAL = "gnome-terminal"
 if string.find(hostname, "capuchin") == 1 then
-    modkey = "Mod1"
+    MODKEY = "Mod1"
+    TERMINAL = "urxvt"
 end
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
@@ -104,14 +99,14 @@ end
 -- }}}
 
 -- {{{ Menu
-mymainmenu = awful.menu({ items = { { "open terminal", terminal },
+mymainmenu = awful.menu({ items = { { "open terminal", TERMINAL },
                                     { "restart", awesome.restart },
                                   }
                         })
 -- }}}
 
 -- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
+menubar.utils.terminal = TERMINAL -- Set the terminal for applications that require it
 -- }}}
 
 -- {{{ Wibox
@@ -125,9 +120,9 @@ mylayoutbox = {}
 mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 1, awful.tag.viewonly),
-                    awful.button({ modkey }, 1, awful.client.movetotag),
+                    awful.button({ MODKEY }, 1, awful.client.movetotag),
                     awful.button({ }, 3, awful.tag.viewtoggle),
-                    awful.button({ modkey }, 3, awful.client.toggletag)
+                    awful.button({ MODKEY }, 3, awful.client.toggletag)
                     )
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
@@ -229,7 +224,7 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
+    awful.key({ MODKEY,           }, "Escape", awful.tag.history.restore),
 
     awful.key({ "Control",        }, ".",
         function ()
@@ -241,17 +236,17 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
+    awful.key({ MODKEY,           }, "w", function () mymainmenu:show() end),
 
     -- Layout manipulation
-    awful.key({ modkey            }, "l", function () awful.tag.incmwfact( 0.05) end),
-    awful.key({ modkey            }, "h", function () awful.tag.incmwfact(-0.05) end),
-    awful.key({ modkey, "Shift"   }, "l", function () awful.client.incwfact(-0.05) end),
-    awful.key({ modkey, "Shift"   }, "h", function () awful.client.incwfact( 0.05) end),
+    awful.key({ MODKEY            }, "l", function () awful.tag.incmwfact( 0.05) end),
+    awful.key({ MODKEY            }, "h", function () awful.tag.incmwfact(-0.05) end),
+    awful.key({ MODKEY, "Shift"   }, "l", function () awful.client.incwfact(-0.05) end),
+    awful.key({ MODKEY, "Shift"   }, "h", function () awful.client.incwfact( 0.05) end),
     awful.key({ "Control", "Shift"}, ".", function () awful.client.swap.byidx(  1)    end),
     awful.key({ "Control", "Shift"}, ",", function () awful.client.swap.byidx( -1)    end),
-    awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
-    awful.key({ modkey,           }, "Tab",
+    awful.key({ MODKEY,           }, "u", awful.client.urgent.jumpto),
+    awful.key({ MODKEY,           }, "Tab",
         function ()
             awful.client.focus.history.previous()
             if client.focus then
@@ -260,21 +255,21 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
-    awful.key({ modkey, "Control" }, "r", awesome.restart),
-    awful.key({ modkey, "Shift"   }, "q", awesome.quit),
+    awful.key({ MODKEY,           }, "Return", function () awful.util.spawn(TERMINAL) end),
+    awful.key({ MODKEY, "Control" }, "r", awesome.restart),
+    awful.key({ MODKEY, "Shift"   }, "q", awesome.quit),
 
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
-    awful.key({ modkey, "Control",        }, "space", function () awful.layout.inc(allLayouts, 1) end),
-    awful.key({ modkey, "Control", "Shift"}, "space", function () awful.layout.inc(allLayouts, -1) end),
-    awful.key({ modkey,           }, "F4", function () awful.layout.inc(fullscreenLayouts, 1) end),
+    awful.key({ MODKEY,           }, "space", function () awful.layout.inc(layouts,  1) end),
+    awful.key({ MODKEY, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
+    awful.key({ MODKEY, "Control",        }, "space", function () awful.layout.inc(allLayouts, 1) end),
+    awful.key({ MODKEY, "Control", "Shift"}, "space", function () awful.layout.inc(allLayouts, -1) end),
+    awful.key({ MODKEY,           }, "F4", function () awful.layout.inc(fullscreenLayouts, 1) end),
 
-    awful.key({ modkey, "Control" }, "n", awful.client.restore),
+    awful.key({ MODKEY, "Control" }, "n", awful.client.restore),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
-    awful.key({ modkey, "Shfit" },   "x",
+    awful.key({ MODKEY },            "r",     function () mypromptbox[mouse.screen]:run() end),
+    awful.key({ MODKEY, "Shfit" },   "x",
               function ()
                   awful.prompt.run({ prompt = "Run Lua code: " },
                   mypromptbox[mouse.screen].widget,
@@ -282,70 +277,70 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_eval")
               end),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end)
+    awful.key({ MODKEY }, "p", function() menubar.show() end)
 )
 
 -- System Control
 if string.find(hostname, "capuchin") == 1 then
     globalkeys = awful.util.table.join(globalkeys,
-        awful.key({ modkey }, "F6",
+        awful.key({ MODKEY }, "F6",
             function (c)
                 fh = assert(io.popen("brightness -", "r"))
                 fh:read("*all")
                 fh:close()
             end),
-        awful.key({ modkey }, "F7",
+        awful.key({ MODKEY }, "F7",
             function (c)
                 fh = assert(io.popen("brightness +", "r"))
                 fh:read("*all")
                 fh:close()
             end),
         -- Speaker Controls
-        awful.key({ modkey }, "F8",
+        awful.key({ MODKEY }, "F8",
             function (c)
                 fh = assert(io.popen("daisyctl --speaker=toggle", "r"))
                 fh:read("*all")
                 fh:close()
             end),
-        awful.key({ modkey }, "F9",
+        awful.key({ MODKEY }, "F9",
             function (c)
                 fh = assert(io.popen("daisyctl --speaker=-", "r"))
                 fh:read("*all")
                 fh:close()
             end),
-        awful.key({ modkey }, "F10",
+        awful.key({ MODKEY }, "F10",
             function (c)
                 fh = assert(io.popen("daisyctl --speaker=+", "r"))
                 fh:read("*all")
                 fh:close()
             end),
         -- Headphone Controls
-        awful.key({ modkey, "Control" }, "F8",
+        awful.key({ MODKEY, "Control" }, "F8",
             function (c)
                 fh = assert(io.popen("daisyctl --headphones=toggle", "r"))
                 fh:read("*all")
                 fh:close()
             end),
-        awful.key({ modkey, "Control" }, "F9",
+        awful.key({ MODKEY, "Control" }, "F9",
             function (c)
                 fh = assert(io.popen("daisyctl --headphones=-", "r"))
                 fh:read("*all")
                 fh:close()
             end),
-        awful.key({ modkey, "Control" }, "F10",
+        awful.key({ MODKEY, "Control" }, "F10",
             function (c)
                 fh = assert(io.popen("daisyctl --headphones=+", "r"))
                 fh:read("*all")
                 fh:close()
             end),
         -- Power controls
-        awful.key({ modkey }, "XF86PowerOff",
+        awful.key({ MODKEY }, "XF86PowerOff",
             function (c)
                 fh = assert(io.popen("sleep 5 && systemctl suspend"))
                 fh:read("*all")
                 fh:close()
             end),
-        awful.key({ modkey, "Control", "Shift" }, "XF86PowerOff",
+        awful.key({ MODKEY, "Control", "Shift" }, "XF86PowerOff",
             function (c)
                 fh = assert(io.popen("sleep 5 && systemctl poweroff"))
                 fh:read("*all")
@@ -355,19 +350,19 @@ if string.find(hostname, "capuchin") == 1 then
 end
 
 clientkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
-    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
-    awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
-    awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
-    awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
-    awful.key({ modkey,           }, "n",
+    awful.key({ MODKEY,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
+    awful.key({ MODKEY, "Shift"   }, "c",      function (c) c:kill()                         end),
+    awful.key({ MODKEY, "Control" }, "space",  awful.client.floating.toggle                     ),
+    awful.key({ MODKEY, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
+    awful.key({ MODKEY,           }, "o",      awful.client.movetoscreen                        ),
+    awful.key({ MODKEY,           }, "t",      function (c) c.ontop = not c.ontop            end),
+    awful.key({ MODKEY,           }, "n",
         function (c)
             -- The client currently has the input focus, so it cannot be
             -- minimized, since minimized clients can't have the focus.
             c.minimized = true
         end),
-    awful.key({ modkey,           }, "m",
+    awful.key({ MODKEY,           }, "m",
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
@@ -379,7 +374,7 @@ clientkeys = awful.util.table.join(
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
     globalkeys = awful.util.table.join(globalkeys,
-        awful.key({ modkey }, "#" .. i + 9,
+        awful.key({ MODKEY }, "#" .. i + 9,
                   function ()
                         local screen = mouse.screen
                         local tag = awful.tag.gettags(screen)[i]
@@ -387,7 +382,7 @@ for i = 1, 9 do
                            awful.tag.viewonly(tag)
                         end
                   end),
-        awful.key({ modkey, "Control" }, "#" .. i + 9,
+        awful.key({ MODKEY, "Control" }, "#" .. i + 9,
                   function ()
                       local screen = mouse.screen
                       local tag = awful.tag.gettags(screen)[i]
@@ -395,14 +390,14 @@ for i = 1, 9 do
                          awful.tag.viewtoggle(tag)
                       end
                   end),
-        awful.key({ modkey, "Shift" }, "#" .. i + 9,
+        awful.key({ MODKEY, "Shift" }, "#" .. i + 9,
                   function ()
                       local tag = awful.tag.gettags(client.focus.screen)[i]
                       if client.focus and tag then
                           awful.client.movetotag(tag)
                      end
                   end),
-        awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
+        awful.key({ MODKEY, "Control", "Shift" }, "#" .. i + 9,
                   function ()
                       local tag = awful.tag.gettags(client.focus.screen)[i]
                       if client.focus and tag then
@@ -413,8 +408,8 @@ end
 
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
-    awful.button({ modkey }, 1, awful.mouse.client.move),
-    awful.button({ modkey }, 3, awful.mouse.client.resize))
+    awful.button({ MODKEY }, 1, awful.mouse.client.move),
+    awful.button({ MODKEY }, 3, awful.mouse.client.resize))
 
 -- Set keys
 root.keys(globalkeys)
