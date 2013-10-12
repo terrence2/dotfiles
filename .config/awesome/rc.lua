@@ -516,6 +516,15 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
+-- Run xmodmap to adjust mouse buttons if needed.
+function file_exists(name)
+    local f=io.open(name,"r")
+    if f~=nil then io.close(f) return true else return false end
+end
+if file_exists("/home/terrence/.Xmodmap") then
+    os.execute("xmodmap /home/terrence/.Xmodmap")
+end
+
 -- Run network manager.
 os.execute("nm-applet &")
 
