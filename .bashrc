@@ -8,6 +8,10 @@ shopt -s histappend
 # Run clang++ twice when using CCACHE, as it is preprocessor aware.
 export CCACHE_CPP2=yes
 
+# Mozilla debug build helpers.
+export MOZ_QUIET=1 # Silence ++THIS and --THAT
+export MOZ_IGNORE_WARNINGS=1 # Silence NS_WARNING
+
 alias aslron="sudo echo 2 >/proc/sys/kernel/randomize_va_space"
 alias aslroff="sudo echo 0 >/proc/sys/kernel/randomize_va_space"
 alias swapclear="sudo swapoff; sudo swapon"

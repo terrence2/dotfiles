@@ -43,6 +43,9 @@ nnoremap <F3> :NumbersToggle<CR>
 " Configure SrcExpl
 "map <C-S-O> :SrcExplToggle<CR>
 
+" Tell Ctrl-P not to clear its cache on exit.
+let g:ctrlp_clear_cache_on_exit = 0
+
 " show line/column at bottom and on side
 set ruler
 set number

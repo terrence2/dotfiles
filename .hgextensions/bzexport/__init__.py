@@ -42,14 +42,13 @@ attaching anything to it.
 
 """
 from mercurial.i18n import _
-from mercurial import commands, cmdutil, util, patch
+from mercurial import cmdutil, util, patch
 from hgext import mq
 from cStringIO import StringIO
 import json
 import sys
 import os
 import re
-import urllib
 import urllib2
 import urlparse
 import bzauth
@@ -74,6 +73,7 @@ review_re = re.compile(r'[ra][=?]+(\w[^ ]+)')
 BINARY_CACHE_FILENAME = ".bzexport.cache"
 INI_CACHE_FILENAME = ".bzexport"
 
+
 def get_default_version(ui, api_server, product):
     c = bzauth.load_configuration(ui, api_server, BINARY_CACHE_FILENAME)
     versions = c['product'].get(product, {}).get('version')
@@ -88,6 +88,7 @@ def get_default_version(ui, api_server, product):
         return uns[-1]
     return versions[-1]
 
+
 # ui.promptchoice only allows single-character responses. If we have more than
 # 10 options, that won't work, so fall back to ui.prompt.
 def prompt_manychoice(ui, message, prompts):
@@ -96,10 +97,10 @@ def prompt_manychoice(ui, message, prompts):
     for p in prompts:
         pos = p.index('&')
         if pos >= 0:
-            if p[pos+1] in seen:
+            if p[pos + 1] in seen:
                 found_multi = True
             else:
-                seen.add(p[pos+1])
+                seen.add(p[pos + 1])
 
     while found_multi:
         choice = ui.prompt(message, 'default')
@@ -110,11 +111,12 @@ def prompt_manychoice(ui, message, prompts):
             return prompts.index(choice)
         ui.write("unrecognized response\n")
 
-    return ui.promptchoice(message, prompts, len(prompts)-1)
+    return ui.promptchoice(message, prompts, len(prompts) - 1)
+
 
 def prompt_menu(ui, name, values,
-                readable_values = None,
-                message = '',
+                readable_values=None,
+                message='',
                 allow_none=False):
     if message and not message.endswith('\n'):
         message += "\n"
@@ -139,6 +141,7 @@ def prompt_menu(ui, name, values,
     else:
         return values[choice]
 
+
 def filter_strings(collection, substring):
     substring = substring.lower()
     ret = [ s for s in collection if s.lower() == substring ]
@@ -146,21 +149,24 @@ def filter_strings(collection, substring):
         return ret
     return [ v for v in collection if v.lower().find(substring) != -1 ]
 
-def choose_value(ui, desc, options, message = "", usemenu = True):
+
+def choose_value(ui, desc, options, message="", usemenu=True):
     if len(options) == 0:
         return None
     elif len(options) == 1:
         return options.pop()
     elif usemenu:
-        return prompt_menu(ui, desc, list(options), message = message)
+        return prompt_menu(ui, desc, list(options), message=message)
     else:
         return None
 
+
 def multi_reviewer_prompt(ui, search_results):
     return prompt_menu(ui, 'reviewer', search_results['names'],
-                       readable_values = search_results['real_names'],
-                       message = "Multiple bugzilla users matching \"%s\":\n\n" % search_results["search_string"],
-                       allow_none = True)
+                       readable_values=search_results['real_names'],
+                       message="Multiple bugzilla users matching \"%s\":\n\n" % search_results["search_string"],
+                       allow_none=True)
+
 
 def validate_reviewers(ui, api_server, auth, search_strings, multi_callback):
     search_results = find_reviewers(ui, api_server, INI_CACHE_FILENAME, auth, search_strings)
@@ -188,6 +194,7 @@ def validate_reviewers(ui, api_server, auth, search_strings, multi_callback):
         return
     return reviewers
 
+
 # Copied from savecommitmessage in localrepo.py (but with variable filename and unicode)
 def savefile(repo, basename, text):
     fp = repo.opener(basename, 'wb')
@@ -195,7 +202,7 @@ def savefile(repo, basename, text):
         fp.write(text.encode('utf-8'))
     finally:
         fp.close()
-    return repo.pathto(fp.name[len(repo.root)+1:])
+    return repo.pathto(fp.name[len(repo.root) + 1:])
 
 # Sure sign of a poor developer: they implement their own half-assed, one-off
 # templating engine instead of reusing an existing one.
@@ -252,8 +259,11 @@ Attachment Comment (appears as a regular comment on the bug):
 ''' }
 
 field_re = re.compile(r'@([^@]+)@')
+
+
 def edit_form(ui, repo, fields, template_name):
     template_fields = []
+
     def substitute_field(m):
         field_name = m.group(1)
         template_fields.append(field_name)
@@ -304,25 +314,23 @@ def edit_form(ui, repo, fields, template_name):
 
     return new_fields
 
+
 def bugzilla_info(ui, profile):
     api_server = ui.config("bzexport", "api_server", "https://api-dev.bugzilla.mozilla.org/latest/")
     bugzilla = ui.config("bzexport", "bugzilla", "https://bugzilla.mozilla.org/")
     username = ui.config("bzexport", "username", None)
-    if username:
-        username = urllib.quote(username)
     password = ui.config("bzexport", "password", None)
-    if password:
-        password = urllib.quote(password)
 
     auth = bzauth.get_auth(ui, bugzilla, profile, username, password)
     return (auth, api_server, bugzilla)
+
 
 def urlopen(ui, req):
     """Wraps urllib2.urlopen() to provide error handling."""
     ui.progress('Accessing bugzilla server', None, item=req.get_full_url())
     #ui.debug("%s %s\n" % (req.get_method(), req.get_data()))
     try:
-        return urllib2.urlopen(req)
+        return urllib2.urlopen(req, timeout=30)
     except urllib2.HTTPError, e:
         msg = ''
         try:
@@ -335,6 +343,7 @@ def urlopen(ui, req):
         if msg:
             ui.warn('Error: %s\n' % msg)
         raise
+
 
 def infer_arguments(ui, repo, args, opts):
     rev = None
@@ -385,7 +394,8 @@ def infer_arguments(ui, repo, args, opts):
 
     return (rev, bug)
 
-def choose_prodcomponent(ui, c, orig_product, orig_component, finalize = False):
+
+def choose_prodcomponent(ui, cache, orig_product, orig_component, finalize=False):
     def canon(v):
         if not v or v == '<choose-from-menu>':
             return None
@@ -394,7 +404,7 @@ def choose_prodcomponent(ui, c, orig_product, orig_component, finalize = False):
     product = canon(orig_product)
     component = canon(orig_component)
 
-    products_info = c.get('product', {})
+    products_info = cache.get('product', {})
     all_products = products_info.keys()
 
     def products_with_component_match(component):
@@ -417,7 +427,7 @@ def choose_prodcomponent(ui, c, orig_product, orig_component, finalize = False):
                 all_components.update(products_info[p]['component'].keys())
             if component.lower() not in [ c.lower() for c in all_components ]:
                 product = component[0:slash]
-                component = component[slash+1:]
+                component = component[slash + 1:]
 
     # 'products' and 'components' will be the set of valid products/components
     # remaining after filtering by the 'product' and 'component' passed in
@@ -427,8 +437,8 @@ def choose_prodcomponent(ui, c, orig_product, orig_component, finalize = False):
     if product is None:
         if component is None:
             product = choose_value(ui, 'product', sorted(all_products),
-                                   message = "Possible Products:",
-                                   usemenu = finalize)
+                                   message="Possible Products:",
+                                   usemenu=finalize)
             if product is not None:
                 products = [ product ]
         else:
@@ -453,8 +463,8 @@ def choose_prodcomponent(ui, c, orig_product, orig_component, finalize = False):
         product = products.pop()
     else:
         product = choose_value(ui, 'product', sorted(products),
-                               message = "Select from these products:",
-                               usemenu = finalize)
+                               message="Select from these products:",
+                               usemenu=finalize)
         if product is not None:
             prodcomponents = products_info[product]['component'].keys()
             components = set(components).intersection(prodcomponents)
@@ -467,14 +477,15 @@ def choose_prodcomponent(ui, c, orig_product, orig_component, finalize = False):
         component = components.pop()
     else:
         component = choose_value(ui, 'component', sorted(components),
-                                 message = "Select from these components:",
-                                 usemenu = finalize)
+                                 message="Select from these components:",
+                                 usemenu=finalize)
         if component is None:
             component = orig_component
 
     return (product, component)
 
-def fill_values(values, ui, api_server, reviewers = None, finalize = False):
+
+def fill_values(values, ui, api_server, reviewers=None, finalize=False):
     if reviewers is not None:
         values['REVIEWER_1'] = '<none>'
         values['REVIEWER_2'] = '<none>'
@@ -483,10 +494,10 @@ def fill_values(values, ui, api_server, reviewers = None, finalize = False):
         if (len(reviewers) > 1):
             values['REVIEWER_2'] = reviewers[1]
 
-    c = bzauth.load_configuration(ui, api_server, BINARY_CACHE_FILENAME)
+    cache = bzauth.load_configuration(ui, api_server, BINARY_CACHE_FILENAME)
 
     if 'PRODUCT' in values:
-        values['PRODUCT'], values['COMPONENT'] = choose_prodcomponent(ui, c, values['PRODUCT'], values['COMPONENT'], finalize = finalize)
+        values['PRODUCT'], values['COMPONENT'] = choose_prodcomponent(ui, cache, values['PRODUCT'], values['COMPONENT'], finalize=finalize)
 
     if 'PRODVERSION' in values:
         if values['PRODVERSION'] == '<default>' and values['PRODUCT'] not in [None, '<choose-from-menu>']:
@@ -502,11 +513,16 @@ def fill_values(values, ui, api_server, reviewers = None, finalize = False):
         if values['BUGTITLE'] in [None, '<required>']:
             values['BUGTITLE'] = ui.prompt(_("Bug title:"))
 
+    if 'BUGCOMMENT0' in values:
+        if values['BUGCOMMENT0'] in [None, '<required>']:
+            values['BUGCOMMENT0'] = ui.prompt(_("Bug description:"))
+
     if 'ATTACHMENT_DESCRIPTION' in values:
         if values['ATTACHMENT_DESCRIPTION'] in [None, '<required>']:
             values['ATTACHMENT_DESCRIPTION'] = ui.prompt(_("Patch description:"), default=values['ATTACHMENT_FILENAME'])
 
     return values
+
 
 def update_patch(ui, repo, rev, bug, update, rename, interactive):
     update_patch = update if update is not None else ui.configbool("bzexport", "update-patch", False)
@@ -544,15 +560,16 @@ def update_patch(ui, repo, rev, bug, update, rename, interactive):
         ph = mq.patchheader(q.join(rev), q.plainmode)
         msg = [ s.decode('utf-8') for s in ph.message ]
         if not msg:
-          msg = ["Bug %s patch" % bug]
+            msg = ["Bug %s patch" % bug]
         elif not bug_re.search(msg[0]):
-          msg[0] = "Bug %s - %s" % (bug, msg[0])
+            msg[0] = "Bug %s - %s" % (bug, msg[0])
         opts = { 'git': True, 'message': '\n'.join(msg).encode('utf-8'), 'include': ["re:."] }
         mq.refresh(ui, repo, **opts)
 
     return rev
 
-def obsolete_old_patches(ui, api_server, token, bugid, bugzilla, filename, ignore_id, pre_hook = None):
+
+def obsolete_old_patches(ui, api_server, token, bugid, bugzilla, filename, ignore_id, pre_hook=None):
     bug = None
     req = bz.get_attachments(api_server, token, bugid)
     try:
@@ -560,14 +577,19 @@ def obsolete_old_patches(ui, api_server, token, bugid, bugzilla, filename, ignor
     except Exception, e:
         raise util.Abort(_("Could not load info for bug %s: %s") % (bug, str(e)))
 
-    patches = [p for p in bug["attachments"] if p["is_patch"] and not p["is_obsolete"] and p["file_name"] == filename and int(p["id"]) != int(ignore_id)]
+    patches = [p
+               for p in bug["attachments"]
+               if p["is_patch"]
+                  and not p["is_obsolete"]
+                  and p["file_name"] == filename
+                  and int(p["id"]) != int(ignore_id)]
     if not len(patches):
         return True
 
     for p in patches:
         #TODO: "?last_change_time=" + p["last_change_time"] to avoid conflicts?
         attachment_url = urlparse.urljoin(bugzilla, "attachment.cgi?id=%s" % (p['id']))
-        if pre_hook and not pre_hook(url = attachment_url, filename = p['file_name'], description = p["description"]):
+        if pre_hook and not pre_hook(url=attachment_url, filename=p['file_name'], description=p["description"]):
             continue
 
         req = bz.obsolete_attachment(api_server, token, p)
@@ -578,13 +600,14 @@ def obsolete_old_patches(ui, api_server, token, bugid, bugzilla, filename, ignor
 
     return True
 
+
 def find_reviewers(ui, api_server, user_cache_filename, token, search_strings):
-    c = bzauth.load_user_cache(ui, api_server, user_cache_filename)
+    cache = bzauth.load_user_cache(ui, api_server, user_cache_filename)
     section = api_server
 
     search_results = []
     for search_string in search_strings:
-        name = c.get(section, search_string)
+        name = cache.get(section, search_string)
         if name:
             search_results.append({"search_string": search_string,
                                    "names": [name],
@@ -600,14 +623,15 @@ def find_reviewers(ui, api_server, user_cache_filename, token, search_strings):
                                    "names": names,
                                    "real_names": real_names})
             if len(real_names) == 1:
-                c.set(section, search_string, names[0])
+                cache.set(section, search_string, names[0])
         except Exception, e:
             search_results.append({"search_string": search_string,
                                    "error": str(e),
                                    "real_names": None})
             raise
-    bzauth.store_user_cache(c, user_cache_filename)
+    bzauth.store_user_cache(cache, user_cache_filename)
     return search_results
+
 
 def flag_type_id(ui, api_server, config_cache_filename, flag_name, product, component):
     """
@@ -615,7 +639,7 @@ def flag_type_id(ui, api_server, config_cache_filename, flag_name, product, comp
     """
     configuration = bzauth.load_configuration(ui, api_server, config_cache_filename)
     if not configuration or not configuration["flag_type"]:
-      raise util.Abort(_("Could not find configuration object"))
+        raise util.Abort(_("Could not find configuration object"))
 
     # Get the set of flag ids used for this product/component
     prodflags = configuration['product'][product]['component'][component]['flag_type']
@@ -628,8 +652,10 @@ def flag_type_id(ui, api_server, config_cache_filename, flag_name, product, comp
 
     return flag_ids[0]
 
+
 def review_flag_type_id(ui, api_server, config_cache_filename, product, component):
     return flag_type_id(ui, api_server, config_cache_filename, 'review', product, component)
+
 
 def create_attachment(ui, api_server, token, bug,
                       config_cache_filename,
@@ -646,6 +672,7 @@ def create_attachment(ui, api_server, token, bug,
                                description=description, filename=filename, comment=comment,
                                **opts)
     return json.load(urlopen(ui, req))
+
 
 def bzexport(ui, repo, *args, **opts):
     """
@@ -692,9 +719,11 @@ def bzexport(ui, repo, *args, **opts):
         # First, strip off a "bug NNN" or "b=NNN" in the first line, but save
         # it in case a bug number was not provided.
         bzexport.newbug = None
+
         def grab_bug(m):
             bzexport.newbug = m.group(2)
             return ''
+
         parts = desc.split('\n', 1)
         parts[0] = bug_re.sub(grab_bug, parts[0], 1)
         desc = ''.join(parts)
@@ -717,6 +746,13 @@ def bzexport(ui, repo, *args, **opts):
         if desc[0] in ['-', ':', '.']:
             desc = desc[1:].lstrip()
 
+        # Next, just take the first line in case. If there is more than one
+        # line, use it as a comment.
+        m = re.match(r'([^\n]*)\n+(.*)', desc, re.DOTALL)
+        if m:
+            desc = m.group(1)
+            patch_comment = m.group(2)
+
         # Next strip off review and approval annotations, grabbing the
         # reviewers from the patch comments only if -r auto was given
         def grab_reviewer(m):
@@ -726,13 +762,6 @@ def bzexport(ui, repo, *args, **opts):
         desc = review_re.sub(grab_reviewer, desc).rstrip()
         if len(reviewers) > 0:
             opts['review'] = ''
-
-        # Finally, just take the first line in case. If there is more than one
-        # line, use it as a comment.
-        m = re.match(r'([^\n]*)\n+(.*)', desc, re.DOTALL)
-        if m:
-            desc = m.group(1)
-            patch_comment = m.group(2)
 
     attachment_comment = opts['comment']
     bug_comment = opts['bug_description']
@@ -768,7 +797,7 @@ def bzexport(ui, repo, *args, **opts):
         values['PRODVERSION'] = opts.get('prodversion', '') or ui.config("bzexport", "prodversion", '<default>')
         values['BUGCOMMENT0'] = bug_comment
 
-    values = fill_values(values, ui, api_server, reviewers = reviewers, finalize = False)
+    values = fill_values(values, ui, api_server, reviewers=reviewers, finalize=False)
 
     if opts['edit']:
         if opts['new']:
@@ -777,13 +806,14 @@ def bzexport(ui, repo, *args, **opts):
             values = edit_form(ui, repo, values, 'existing_bug_template')
             bug = values['BUGNUM']
 
-        search_strings = [values[r] for r in ['REVIEWER_1', 'REVIEWER_2']
-                            if values[r] is not None ]
+        search_strings = [values[r]
+                          for r in ['REVIEWER_1', 'REVIEWER_2']
+                          if values[r] is not None]
         reviewers = validate_reviewers(ui, api_server, auth, search_strings, multi_reviewer_prompt)
         if reviewers is None:
             raise util.Abort("Invalid reviewers")
 
-    values = fill_values(values, ui, api_server, finalize = True)
+    values = fill_values(values, ui, api_server, finalize=True)
 
     if opts["new"]:
         if bug is not None:
@@ -798,15 +828,15 @@ def bzexport(ui, repo, *args, **opts):
             if not opts['no_take_bug']:
                 create_opts['assign_to'] = auth.username(api_server)
             req = bz.create_bug(api_server, auth,
-                                product = values['PRODUCT'],
-                                component = values['COMPONENT'],
-                                version = values['PRODVERSION'],
-                                title = values['BUGTITLE'],
-                                description = values['BUGCOMMENT0'],
+                                product=values['PRODUCT'],
+                                component=values['COMPONENT'],
+                                version=values['PRODVERSION'],
+                                title=values['BUGTITLE'],
+                                description=values['BUGCOMMENT0'],
                                 **create_opts)
             result = json.load(urlopen(ui, req))
             bug = result['id']
-            ui.write("Created bug %s at %s\n" % (bug, bugzilla + "/show_bug.cgi?id=" + bug))
+            ui.write("Created bug %s at %s\n" % (bug, bugzilla + "show_bug.cgi?id=" + bug))
         except Exception, e:
             raise util.Abort(_("Error creating bug: %s\n" % str(e)))
     else:
@@ -826,8 +856,8 @@ def bzexport(ui, repo, *args, **opts):
             filename = newname
 
     if opts['interactive'] and ui.prompt(_("Attach patch (y/n)?")) != 'y':
-      ui.write(_("Exiting without creating attachment\n"))
-      return
+        ui.write(_("Exiting without creating attachment\n"))
+        return
 
     extra_args = {}
     if reviewers:
@@ -836,7 +866,7 @@ def bzexport(ui, repo, *args, **opts):
             extra_args['product'] = values['PRODUCT']
             extra_args['component'] = values['COMPONENT']
         else:
-            buginfo = json.load(urlopen(ui, bz.get_bug(api_server, auth, bug, include_fields = ['product', 'component'])))
+            buginfo = json.load(urlopen(ui, bz.get_bug(api_server, auth, bug, include_fields=['product', 'component'])))
             extra_args['product'] = buginfo['product']
             extra_args['component'] = buginfo['component']
 
@@ -854,21 +884,26 @@ def bzexport(ui, repo, *args, **opts):
         if not opts['interactive']:
             return True
         url, filename, description = [ kwargs[k] for k in ['url', 'filename', 'description' ] ]
-        return ui.prompt(_("Obsolete patch %s (%s) - %s (y/n)?") % (url, filename, description)) != 'y'
+        return ui.prompt(_("Obsolete patch %s (%s) - %s (y/n)?") % (url, filename, description)) == 'y'
 
-    obsolete_old_patches(ui, api_server, auth, bug, bugzilla, filename, result['id'], pre_hook = pre_obsolete)
+    obsolete_old_patches(ui, api_server, auth, bug, bugzilla, filename, result['id'], pre_hook=pre_obsolete)
 
     # If attaching to an existing bug (and not suppressed on the command line), take the bug
     if not opts['new'] and not opts['no_take_bug']:
-        req = bz.get_bug(api_server, auth, bug, include_fields=[ 'assigned_to' ])
+        req = bz.get_bug(api_server, auth, bug, include_fields=[ 'assigned_to', 'status' ])
         result = json.load(urlopen(ui, req))
         taker = auth.username(api_server)
         if result['assigned_to']['name'] != taker:
             result['assigned_to'] = { 'name': taker }
+            if result['status'] != 'RESOLVED':
+                result['status'] = 'ASSIGNED'
             req = bz.update_bug(api_server, auth, result)
-            result = json.load(urlopen(ui, req))
-            if not result.get('ok', None):
+            try:
+                result = json.load(urlopen(ui, req))
+                assert result.get('ok', None)
+            except Exception, e:
                 raise util.Abort(_("Error when updating bug %s: %s") % (bug, result))
+
 
 def newbug(ui, repo, *args, **opts):
     """
@@ -900,7 +935,7 @@ def newbug(ui, repo, *args, **opts):
     if args:
         raise util.Abort(_("Too many arguments to newbug command (only title and comment may be given)"))
 
-    bug_comment = opts['comment']
+    bug_comment = opts['comment'] or '<required>'
 
     values = { 'BUGTITLE': opts['title'] or '<required>',
                'PRODUCT': opts.get('product', '') or ui.config("bzexport", "product", '<choose-from-menu>'),
@@ -909,31 +944,31 @@ def newbug(ui, repo, *args, **opts):
                'BUGCOMMENT0': bug_comment,
                }
 
-    fill_values(values, ui, api_server, finalize = False)
+    fill_values(values, ui, api_server, finalize=False)
 
     if opts['edit']:
         values = edit_form(ui, repo, values, 'new_bug_template')
 
-    fill_values(values, ui, api_server, finalize = True)
+    fill_values(values, ui, api_server, finalize=True)
 
     if opts['interactive'] and ui.prompt(_("Create bug in '%s'/'%s' (y/n)?") % (values['PRODUCT'], values['COMPONENT'])) != 'y':
-      ui.write(_("Exiting without creating bug\n"))
-      return
+        ui.write(_("Exiting without creating bug\n"))
+        return
 
     create_opts = {}
     if opts['take_bug']:
         create_opts['assign_to'] = auth.username(api_server)
 
     req = bz.create_bug(api_server, auth,
-                        product = values['PRODUCT'],
-                        component = values['COMPONENT'],
-                        version = values['PRODVERSION'],
-                        title = values['BUGTITLE'],
-                        description = values['BUGCOMMENT0'],
+                        product=values['PRODUCT'],
+                        component=values['COMPONENT'],
+                        version=values['PRODVERSION'],
+                        title=values['BUGTITLE'],
+                        description=values['BUGCOMMENT0'],
                         **create_opts)
     result = json.load(urlopen(ui, req))
     bug = result['id']
-    ui.write("Created bug %s at %s\n" % (bug, bugzilla + "/show_bug.cgi?id=" + bug))
+    ui.write("Created bug %s at %s\n" % (bug, bugzilla + "show_bug.cgi?id=" + bug))
 
 cmdtable = {
     'bzexport':
@@ -968,7 +1003,7 @@ cmdtable = {
            'Suppress patch name/description update (override config file)'),
           # The following option is passed through directly to patch.diffopts
           ('w', 'ignore_all_space', False, 'Generate a diff that ignores whitespace changes')],
-        _('hg bzexport [options] [REV] [BUG]')),
+         _('hg bzexport [options] [REV] [BUG]')),
 
     'newbug':
         (newbug,

@@ -20,6 +20,7 @@ import time
 import tempfile
 import shutil
 import urlparse
+import urllib
 import urllib2
 import json
 from mercurial import config, util
@@ -58,7 +59,7 @@ class bzAuth:
         if self._type == self.typeCookie:
             return "userid=%s&cookie=%s" % (self._userid, self._cookie)
         else:
-            return "username=%s&password=%s" % (self._username, self._password)
+            return "username=%s&password=%s" % (urllib.quote(self._username), urllib.quote(self._password))
 
     def username(self, api_server):
         # This returns and caches the email-address-like username of the user's ID
@@ -134,7 +135,7 @@ def load_configuration(ui, api_server, filename):
 
     ui.write("Refreshing configuration cache for " + api_server + "\n")
     try:
-        cache['configuration'] = json.load(urllib2.urlopen(bz.get_configuration(api_server)))
+        cache['configuration'] = json.load(urllib2.urlopen(bz.get_configuration(api_server), timeout=30))
     except Exception, e:
         raise util.Abort("Error loading bugzilla configuration: " + str(e))
 
@@ -297,7 +298,7 @@ def get_auth(ui, bugzilla, profile, username, password):
 def get_username(api_server, token):
     req = bz.get_user(api_server, token)
     try:
-        user = json.load(urllib2.urlopen(req))
+        user = json.load(urllib2.urlopen(req, timeout=30))
         return user["name"]
     except urllib2.HTTPError, e:
         msg = ''
