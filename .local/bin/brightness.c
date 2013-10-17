@@ -21,7 +21,7 @@ get_brightness_in(const char *filename)
         return 1.0;
     }
     char data[256];
-    memset(data, 256, 0);
+    memset(data, 0, 256);
     int rv = fread(data, 1, 255, fp);
     fclose(fp);
     if (-1 == rv) {
