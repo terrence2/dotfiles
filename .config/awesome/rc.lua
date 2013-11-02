@@ -87,6 +87,7 @@ local allLayouts =
 --    end
 --end
 -- }}}
+os.execute("xsetroot -solid '#00539F'&")
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
