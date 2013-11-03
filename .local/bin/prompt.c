@@ -192,6 +192,12 @@ filter_time(char *time)
 }
 
 void
+startOfLine()
+{
+    printf("\x1b[0G");
+}
+
+void
 color(int code, int mod)
 {
     printf("\x1b[%d;%dm", code, mod);
@@ -332,12 +338,14 @@ print_line1(int status, int width, char *cwd, char *qtop, char *battery,
     PUTn("─", lenTime + 2);
 
     printf("\n");
+    normal();
 }
 
 /* \->  */
 void
 print_line2(int status)
 {
+    startOfLine();
     clr(status);
     printf("╰> ");
     normal();
