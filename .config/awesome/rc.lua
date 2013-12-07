@@ -86,8 +86,8 @@ local allLayouts =
 --        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
 --    end
 --end
--- }}}
 os.execute("xsetroot -solid '#00539F'&")
+-- }}}
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
