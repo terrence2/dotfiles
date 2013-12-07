@@ -13,8 +13,11 @@ import bz
 # Patch list
 delayed_imports = []
 
-# (Patch * path) list
-imported_patches = []
+# The patch that got imported
+imported_patch = None
+
+def last_imported_patch():
+  return imported_patch
 
 class ObjectResponse(object):
   def __init__(self, obj):
@@ -109,11 +112,12 @@ class Handler(urllib2.BaseHandler):
             self.ui.warn("Invalid patch number = '%s'\n" % choice)
             continue
         if not patch and len(delayed_imports) > 0:
-          patch = delayed_imports.pop(0)
+          patch = delayed_imports.pop()
 
     # and finally return the response
     if patch:
-      imported_patches.append((patch, req.get_full_url()))
+      global imported_patch
+      imported_patch = patch
       return PatchResponse(patch)
 
 # interface reverse engineered from urllib.addbase
